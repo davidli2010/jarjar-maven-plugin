@@ -182,6 +182,7 @@ public class JarJarMojo
 
             getLog().info( "Processing: " + inputFile );
 
+            final File tmpInputFile = new File( workingDirectory, inputFile.getName() ) ;
             final File uberZip = new File( workingDirectory, "uber-" + inputFile.getName() );
             final Archiver archiver = archiverManager.getArchiver( "zip" );
 
@@ -189,11 +190,13 @@ public class JarJarMojo
 
             if ( inputFile.isDirectory() )
             {
-                archiver.addDirectory( inputFile );
+                FileUtils.copyDirectory( inputFile, tmpInputFile );
+                archiver.addDirectory( tmpInputFile );
             }
             else
             {
-                archiver.addArchivedFileSet( inputFile );
+                FileUtils.copyFile( inputFile, tmpInputFile );
+                archiver.addArchivedFileSet( tmpInputFile );
             }
 
             for ( final Artifact a : (Set<Artifact>) project.getArtifacts() )
